@@ -13,7 +13,6 @@ const CompanyDetailPage = () => {
   const navigate = useNavigate();
   const { selectedCompany, loading } = useSelector((state) => state.companies);
 
-  console.log(selectedCompany, "selected Company data");
 
   useEffect(() => {
     if (companyId) {

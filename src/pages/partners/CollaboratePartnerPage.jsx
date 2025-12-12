@@ -89,7 +89,7 @@ export const CollaboratePartnerPage = () => {
   }, []);
   const headerButtons = [
     {
-      value: "+ Add Company",
+      value: "+ Add Partner",
       variant: "primary",
       className:
         "!bg-primary !text-white !border-primary hover:!bg-secondary hover:!border-secondary",
@@ -100,8 +100,8 @@ export const CollaboratePartnerPage = () => {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Company Page"
-        description="Manage your Companies here."
+        title="Partners"
+        description="Manage your Partners here."
         buttonsList={headerButtons}
       />
 
@@ -216,7 +216,7 @@ export const CollaboratePartnerPage = () => {
           <div className="flex items-center justify-between px-6 py-4">
             <div>
               <p className="text-sm font-semibold text-slate-900">
-                Companies Overview
+                Partners Overview
               </p>
               <p className="text-xs text-slate-500">
                 {loading ? "Loading..." : `${partners.length} items`}
@@ -364,7 +364,7 @@ export const CollaboratePartnerPage = () => {
                       colSpan="8"
                       className="px-6 py-6 text-center text-slate-500"
                     >
-                      No Companies found
+                      No Partner found
                     </td>
                   </tr>
                 )}

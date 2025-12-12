@@ -214,7 +214,7 @@ setWishes(updated);
     <div className=" mx-auto">
       <div className="flex flex-col lg:flex-row w-full justify-between lg:items-center gap-5 mb-8">
         <div>
-          <h1 className="text-3xl font-bold">Edit Company</h1>
+          <h1 className="text-3xl font-bold">Edit Partner</h1>
           <p className="text-sm font-medium text-gray-600 mt-2">
             Update partner details.
           </p>
@@ -225,7 +225,7 @@ setWishes(updated);
             onClick={() => navigate("/partners")}
             className="btn btn-white btn-sm rounded-lg border-slate-300 text-slate-700 px-6 py-2"
           >
-            Back to Companies
+            Back to Partners
           </button>
         </div>
       </div>
