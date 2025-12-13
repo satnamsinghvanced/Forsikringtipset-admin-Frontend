@@ -63,6 +63,7 @@ const CountiesFormPage = () => {
     selectedCounty,
   } = useSelector((state) => state.counties || {});
   const { allCompanies } = useSelector((state) => state.companies);
+    const [companySearch, setCompanySearch] = useState("");
 
   const [form, setForm] = useState({
     name: "",
@@ -374,11 +375,11 @@ const CountiesFormPage = () => {
                 <span className="text-slate-500 text-sm">Select Companies</span>
               ) : (
                 <div className="flex flex-wrap gap-2">
-                  {form.companies.map((id) => {
-                    const company = allCompanies.find((c) => c._id === id);
+                 {form.companies.map((item) => {
+                       const company = allCompanies.find((c) => c._id === item.companyId);
                     return (
                       <span
-                        key={id}
+                        key={item.companyId}
                         className="bg-gray-100 text-slate-700 px-2 py-1 text-xs rounded-lg flex items-center gap-1"
                       >
                         {company?.companyName}
@@ -388,7 +389,7 @@ const CountiesFormPage = () => {
                             e.stopPropagation();
                             setForm((prev) => ({
                               ...prev,
-                              companies: prev.companies.filter((x) => x !== id),
+                              companies: prev.companies.filter((x) => x !== item),
                             }));
                           }}
                           className="text-blue-700 hover:text-blue-900"
@@ -403,51 +404,63 @@ const CountiesFormPage = () => {
             </div>
 
             {/* Dropdown */}
-            {showCompaniesDropdown && (
-              <div className="absolute z-20 mt-2 w-full max-h-64 overflow-y-auto bg-white border rounded-xl shadow">
-                {allCompanies?.map((company) => (
-                  <label
-                    key={company._id}
-                    className="flex items-center gap-2 p-2 hover:bg-slate-100 cursor-pointer"
-                  >
-                    <input
-                      type="checkbox"
-                      className="!relative"
-                      checked={form.companies.some(
-                        (c) => c.companyId === company._id
-                      )}
-                      onChange={(e) => {
-                        let updated = [...form.companies];
+             {showCompaniesDropdown && (
+                <div className="absolute z-20 mt-2 w-full max-h-64 overflow-y-auto bg-white border rounded-xl shadow p-2">
+                  {/* Search input */}
+                  <input
+                    type="text"
+                    placeholder="Search companies..."
+                    value={companySearch}
+                    onChange={(e) => setCompanySearch(e.target.value)}
+                    className="w-full mb-2 rounded border px-2 py-1 text-sm outline-none focus:border-primary"
+                  />
 
-                        if (e.target.checked) {
-                          if (updated.length >= 10) {
-                            toast.info(
-                              "You can select a maximum of 10 companies."
-                            );
-                            return;
-                          }
-                          updated.push({
-                            companyId: company._id,
-                            rank: updated.length + 1,
-                            isRecommended: false,
-                          });
-                        } else {
-                          updated = updated.filter(
-                            (c) => c.companyId !== company._id
-                          );
-                        }
-
-                        setForm((prev) => ({ ...prev, companies: updated }));
-                      }}
-                    />
-                    <span>{company.companyName}</span>
-                    {/* {company.isRecommended && (
-                      <span className="text-red-500">(Recommended)</span>
-                    )} */}
-                  </label>
-                ))}
-              </div>
-            )}
+                  {/* Filtered list */}
+                  {allCompanies
+                    ?.filter((c) =>
+                      c.companyName
+                        .toLowerCase()
+                        .includes(companySearch.toLowerCase())
+                    )
+                    .map((company) => (
+                      <label
+                        key={company._id}
+                        className="flex items-center gap-2 p-2 hover:bg-slate-100 cursor-pointer rounded"
+                      >
+                        <input
+                          type="checkbox"
+                          className="!relative"
+                          checked={form.companies.some(
+                            (c) => c.companyId === company._id
+                          )}
+                          onChange={(e) => {
+                            let updated = [...form.companies];
+                            if (e.target.checked) {
+                              if (updated.length >= 10) {
+                                toast.info("Maximum 10 companies allowed");
+                                return;
+                              }
+                              updated.push({
+                                companyId: company._id,
+                                rank: updated.length + 1,
+                                isRecommended: false,
+                              });
+                            } else {
+                              updated = updated.filter(
+                                (c) => c.companyId !== company._id
+                              );
+                            }
+                            setForm((prev) => ({
+                              ...prev,
+                              companies: updated,
+                            }));
+                          }}
+                        />
+                        <span>{company.companyName}</span>
+                      </label>
+                    ))}
+                </div>
+              )}
             <h4 className="font-semibold mt-4">Selected Companies</h4>
 
             <div className="space-y-2">
