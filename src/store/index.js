@@ -10,11 +10,11 @@ import partnerReducer from "./slices/partnerSlice";
 import formReducer from "./slices/formSlice";
 import privacyPolicyReducer from "./slices/privacyPolicySlice";
 import termOfServiceReducer from "./slices/termOfService";
-import countySlice from "./slices/countySlice"
-import companySlice from "./slices/companySlice"
+import countySlice from "./slices/countySlice";
+import companySlice from "./slices/companySlice";
 import themeReducer from "./slices/themeSlice";
-import placeSlice from "./slices/placeSlice"
-import QuoteReducer from "./slices/quoteSlice"
+import placeSlice from "./slices/placeSlice";
+import QuoteReducer from "./slices/quoteSlice";
 import realEstateAgentSlice from "./slices/realEstateAgents";
 import collaboratePartners from "./slices/partnersSlice";
 import website_settings from "./slices/website_settingsSlice";
@@ -25,9 +25,10 @@ import smtpSlice from "./slices/smtpSlice";
 import LeadLogsSlice from "./slices/leadLogsSlice";
 import leadTypeSlice from "./slices/leadTypeSlice";
 import faqSlice from "./slices/FaqPageSlice";
-import articleSlice from  "./slices/articlePageSlice";
+import articleSlice from "./slices/articlePageSlice";
 import formPageSlice from "./slices/formPageSlice";
 import formSelectSlice from "./slices/formSelectSlice";
+import stepReducer from "./slices/stepSlice";
 export default configureStore({
   reducer: {
     user,
@@ -45,20 +46,20 @@ export default configureStore({
     companies: companySlice,
     places: placeSlice,
     theme: themeReducer,
-    quote:QuoteReducer,
-    agents:realEstateAgentSlice,
+    quote: QuoteReducer,
+    agents: realEstateAgentSlice,
     settings: website_settings,
     partners: collaboratePartners,
     footer: footerReducer,
-    sitemap:sitemapSlice,
+    sitemap: sitemapSlice,
     contact: contactSlice,
     smtp: smtpSlice,
-    lead:LeadLogsSlice,
-    leadType:leadTypeSlice,
-    faqPage:faqSlice,
-    articlePage :articleSlice,
-    formPage :formPageSlice,
-    formSelect :formSelectSlice
-
+    lead: LeadLogsSlice,
+    leadType: leadTypeSlice,
+    faqPage: faqSlice,
+    articlePage: articleSlice,
+    formPage: formPageSlice,
+    formSelect: formSelectSlice,
+    steps: stepReducer,
   },
 });

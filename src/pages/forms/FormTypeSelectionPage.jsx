@@ -103,6 +103,14 @@ const FormManagePage = () => {
         "!bg-primary !text-white !border-primary hover:!bg-secondary hover:!border-secondary",
       onClick: () => navigate("/forms/create"),
     },
+    {
+      value: "Create Fixed Steps First and Final",
+      variant: "primary",
+      icon: <LuPlus size={18} />,
+      className:
+        "!bg-primary !text-white !border-primary hover:!bg-secondary hover:!border-secondary",
+      onClick: () => navigate("/admin/fixed-steps"),
+    },
   ];
 
   // If steps mode active

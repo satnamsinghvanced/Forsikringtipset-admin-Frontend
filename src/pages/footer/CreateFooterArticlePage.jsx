@@ -39,7 +39,7 @@ const CreateFooterArticlePage = () => {
     if (!article) return toast.error("Article not found");
 
     const title = article.title || article.heading || "Untitled";
-    const href = article.slug ? `/articles/${article.slug}` : (article.href || `/articles/${article._id}`);
+    const href = article.slug ? `/artikler/${article.categoryId.slug}/${article.slug}` : (article.href || `/artikler/${article._id}`);
 
     try {
       const working = { ...(footer || {}) };

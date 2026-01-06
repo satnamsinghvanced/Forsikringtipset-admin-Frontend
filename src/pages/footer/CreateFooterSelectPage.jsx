@@ -53,13 +53,13 @@ const CreateFooterSelectPage = () => {
 
     if (tab === "articles") {
       title = item.title || item.heading || "Untitled";
-      href = item.slug ? `/articles/${item.slug}` : `/articles/${item._id}`;
+      href = item.slug ? `/artikler/${item.categoryId.slug}/${item.slug}` : `/artikler/${item._id}`;
     } else if (tab === "places") {
       title = item.name || item.title || "Place";
-      href = `/eiendomsmegler?county=${item.slug || item._id}`;
+      href = `/bedrifter/${item.slug || item._id}`;
     } else if (tab === "companies") {
       title = item.name || item.companyName || "Company";
-      href = `/eiendomsmegler/${item.slug || item._id}`;
+      href = `/bedrifter/${item.slug || item._id}`;
     }
 
     try {

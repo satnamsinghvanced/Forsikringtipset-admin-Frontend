@@ -1,4 +1,4 @@
-    import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { toast } from "react-toastify";
 import api from "../../api/axios";
@@ -27,7 +27,7 @@ const FormCreateEditPage = () => {
         setFormData({
           formTitle: data.data?.formTitle || "",
           formDescription: data.data?.formDescription || "",
-            price: data.data?.price || "",
+          price: data.data?.price || "",
         });
       } catch (err) {
         toast.error("Failed to load form");
@@ -69,9 +69,9 @@ const FormCreateEditPage = () => {
   const headerButtons = [
     {
       value: "Back",
-        variant: "white",
-        className:
-          "border border-slate-300 text-slate-700 hover:border-slate-400 hover:bg-white",
+      variant: "white",
+      className:
+        "border border-slate-300 text-slate-700 hover:border-slate-400 hover:bg-white",
       onClick: () => navigate("/forms"),
     },
   ];
@@ -90,7 +90,6 @@ const FormCreateEditPage = () => {
 
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="grid gap-5">
-
           <div>
             <label className="block text-sm font-semibold text-slate-700">
               Form Title
@@ -118,12 +117,12 @@ const FormCreateEditPage = () => {
               }
             />
           </div>
-           <div>
+          <div>
             <label className="block text-sm font-semibold text-slate-700">
               Price
             </label>
             <input
-              type = "number"
+              type="number"
               className="mt-1 w-full rounded-lg border border-slate-300 p-2"
               value={formData.price}
               onChange={(e) =>

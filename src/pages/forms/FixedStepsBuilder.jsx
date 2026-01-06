@@ -1,38 +1,45 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import api from "../../api/axios";
 import PageHeader from "../../components/PageHeader";
 import { AiTwotoneEdit } from "react-icons/ai";
 import { RiDeleteBin5Line } from "react-icons/ri";
+import {
+  getSteps,
+  createStep,
+  updateStep,
+  deleteStep,
+} from "../../store/slices/stepSlice";
 
-const StepsBuilderForm = ({ form, onBack }) => {
-  const [steps, setSteps] = useState([]);
+const FixedStepsBuilder = ({ onBack }) => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { steps = [], loading } = useSelector((state) => state.steps || {});
+
+  const [form] = useState({
+    _id: "fixed-steps",
+    formTitle: "Fixed Steps (First & Final)",
+    formDescription:
+      "Manage the global first and final steps applied to all forms.",
+  });
+
   const [currentStep, setCurrentStep] = useState(null);
 
-  const fetchSteps = async () => {
-    try {
-      const { data } = await api.get(`/forms/form-steps/${form._id}`);
-      setSteps(
-        (data?.data?.steps || []).sort((a, b) => a.stepOrder - b.stepOrder)
-      );
-    } catch (error) {
-      console.log("No steps found yet");
-      setSteps([]);
-    }
-  };
-
   useEffect(() => {
-    fetchSteps();
-  }, []);
+    dispatch(getSteps());
+  }, [dispatch]);
 
   const openStepForm = (step = null) => {
     if (step) setCurrentStep({ ...step });
     else
       setCurrentStep({
+        stepType: "first",
         stepTitle: "",
         stepDescription: "",
-        stepOrder: steps.length + 1,
+        stepOrder: (steps?.length || 0) + 1,
         fields: [
           {
             label: "",
@@ -108,6 +115,7 @@ const StepsBuilderForm = ({ form, onBack }) => {
           throw new Error("All fields must have label and name");
 
       const payload = {
+        stepType: currentStep.stepType,
         stepTitle: currentStep.stepTitle,
         stepDescription: currentStep.stepDescription,
         stepOrder: currentStep._id ? currentStep.stepOrder : steps.length + 1,
@@ -123,32 +131,43 @@ const StepsBuilderForm = ({ form, onBack }) => {
         })),
       };
 
+      let res;
       if (currentStep._id) {
-        await api.put(
-          `/forms/form-steps/${form._id}/${currentStep._id}`,
-          payload
-        );
-        toast.success("Step updated!");
+        res = await dispatch(updateStep({ id: currentStep._id, payload }));
       } else {
-        await api.post(`/forms/form-steps/${form._id}`, payload);
-        toast.success("Step added!");
+        res = await dispatch(createStep(payload));
       }
 
-      setCurrentStep(null);
-      fetchSteps();
+      if (res.meta.requestStatus === "fulfilled") {
+        toast.success(currentStep._id ? "Step updated!" : "Step added!");
+        setCurrentStep(null);
+        dispatch(getSteps()); // Refresh steps
+      } else {
+        toast.error(res.payload || "Failed to save step");
+      }
     } catch (err) {
       toast.error(`Failed to save step. ${err.message}`);
     }
   };
+
   const handleDeleteStep = async (index) => {
+    if (!window.confirm("Are you sure you want to delete this step?")) return;
     try {
       const stepId = steps[index]._id;
-      await api.delete(`/forms/form-steps/${form._id}/${stepId}`);
-      toast.success("Step deleted");
-      fetchSteps();
+      const res = await dispatch(deleteStep(stepId));
+      if (res.meta.requestStatus === "fulfilled") {
+        toast.success("Step deleted");
+      } else {
+        toast.error(res.payload || "Failed to delete step");
+      }
     } catch (err) {
       toast.error("Failed to delete step");
     }
+  };
+
+  const handleBack = () => {
+    if (onBack) onBack();
+    else navigate("/forms"); // or navigate(-1)
   };
 
   const headerButtons = [
@@ -157,7 +176,7 @@ const StepsBuilderForm = ({ form, onBack }) => {
       variant: "white",
       className:
         "border border-slate-300 text-slate-700 hover:border-slate-400 hover:bg-white",
-      onClick: onBack,
+      onClick: handleBack,
     },
     {
       value: "Add New Step",
@@ -167,6 +186,8 @@ const StepsBuilderForm = ({ form, onBack }) => {
       onClick: () => openStepForm(),
     },
   ];
+
+  if (!form) return <div className="p-6">Steps not found.</div>;
 
   // -------------------
   // LIST VIEW
@@ -180,9 +201,11 @@ const StepsBuilderForm = ({ form, onBack }) => {
           buttonsList={headerButtons}
         />
 
-        {steps.length === 0 ? (
+        {loading ? (
+          <div className="text-center py-10">Loading steps...</div>
+        ) : steps.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-6 text-center text-sm text-slate-500">
-            No steps added yet.
+            No fixed steps added yet.
           </div>
         ) : (
           <div className="space-y-4">
@@ -193,6 +216,14 @@ const StepsBuilderForm = ({ form, onBack }) => {
               >
                 <div className="flex justify-between items-start mb-4">
                   <div>
+                    <h6>
+                      {" "}
+                      Step Type:{" "}
+                      <span className="text-sm text-slate-600">
+                        {s?.stepType || "N/A"}
+                      </span>
+                    </h6>
+
                     <h3 className="font-bold text-lg">
                       {i + 1}. {s.stepTitle}
                     </h3>
@@ -290,6 +321,16 @@ const StepsBuilderForm = ({ form, onBack }) => {
       />
 
       <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-6 space-y-4">
+        <select
+          value={currentStep.stepType}
+          onChange={(e) =>
+            setCurrentStep({ ...currentStep, stepType: e.target.value })
+          }
+          className="w-full p-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+        >
+          <option value="first">First</option>
+          <option value="final">Final</option>
+        </select>
         <input
           type="text"
           placeholder="Step Title"
@@ -358,6 +399,7 @@ const StepsBuilderForm = ({ form, onBack }) => {
               <option value="dropdown">Dropdown</option>
               <option value="checkbox">Checkbox</option>
               <option value="radio">Radio</option>
+              <option value="date">Date</option>
               <option value="file">File</option>
             </select>
 
@@ -433,4 +475,4 @@ const StepsBuilderForm = ({ form, onBack }) => {
   );
 };
 
-export default StepsBuilderForm;
+export default FixedStepsBuilder;

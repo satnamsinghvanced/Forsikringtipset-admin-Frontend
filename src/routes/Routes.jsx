@@ -64,6 +64,7 @@ import FormUIPage from "../pages/formpage/FormPage";
 import FormCreateEditPage from "../pages/forms/FormPage";
 import FormManagePage from "../pages/forms/FormTypeSelectionPage";
 import StepsBuilderForm from "../pages/forms/StepsBuilderForm";
+import FixedStepsBuilder from "../pages/forms/FixedStepsBuilder";
 import LeadDetails from "../pages/leadLogs/LeadDetails";
 import CountiesDetailPage from "../pages/counties/CountiesDetailPage";
 import LeadInfo from "../pages/partners/LeadInfoPage";
@@ -90,8 +91,6 @@ const Routes = () => {
   return (
     <RouteWrapper>
       <Route element={token ? <Layout /> : <AuthLayout />}>
-
-      
         <Route path={ROUTES.HOMEPAGE} element={<HomePage />} />
         <Route path="/about" element={<AboutPage />} />
 
@@ -138,6 +137,7 @@ const Routes = () => {
         <Route path="/forms/create" element={<FormCreateEditPage />} />
         <Route path="/forms/:id/edit" element={<FormCreateEditPage />} />
         <Route path="/forms/:id/steps" element={<StepsBuilderForm />} />
+        <Route path="/admin/fixed-steps" element={<FixedStepsBuilder />} />
 
         <Route
           path="/admin/form-builder/:formType"
@@ -165,7 +165,10 @@ const Routes = () => {
           element={<CreateFooterArticlePage />}
         />
         <Route path={ROUTES.FOOTER_EDIT} element={<EditFooterItemPage />} />
-        <Route path={ROUTES.FOOTER_EDIT_FOR_HEADER_AND_ADDRESS} element={<EditFooterItemPage />} />
+        <Route
+          path={ROUTES.FOOTER_EDIT_FOR_HEADER_AND_ADDRESS}
+          element={<EditFooterItemPage />}
+        />
         {/* <Route path="/footer/edit/:tab" element={<EditFooterItemPage />} /> */}
         <Route
           path="/footer/create/:tab/select"
