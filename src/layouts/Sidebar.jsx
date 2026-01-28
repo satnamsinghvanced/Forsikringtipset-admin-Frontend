@@ -60,14 +60,23 @@ const SideBar = ({ toggleSidebar, isMiniSidebarOpen, onCloseSidebar }) => {
 
     // Handle singular ↔ plural auto-match
     // counties -> county, categories -> category
-    const singular = href.replace(/ies$/, "y").replace(/s$/, "");
-    const plural = singular.endsWith("y")
-      ? singular.slice(0, -1) + "ies"
-      : singular + "s";
+   if (href !== "/partners" && href !== "/partner") {
+      const normalizedHref = href.startsWith("/") ? href.slice(1) : href;
+      const singular = normalizedHref.replace(/ies$/, "y").replace(/s$/, "");
+      const plural = singular.endsWith("y")
+        ? singular.slice(0, -1) + "ies"
+        : singular + "s";
 
-    if (path.startsWith("/" + singular)) return true;
-    if (path.startsWith("/" + plural)) return true;
+      const singularPath = "/" + singular;
+      const pluralPath = "/" + plural;
 
+      if (path === singularPath || path.startsWith(singularPath + "/")) return true;
+      if (path === pluralPath || path.startsWith(pluralPath + "/")) return true;
+    }
+
+    if (href === "/lead-logs" && (path === "/leads" || path.startsWith("/leads/"))) {
+      return true;
+    }
     return false;
   };
 

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import PageHeader from "../../components/PageHeader";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
@@ -48,6 +48,7 @@ const quillFormats = [
 
 const ArticleFormPage = () => {
   const { articleId } = useParams();
+      const [searchParams] = useSearchParams();
   const isEditMode = Boolean(articleId);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -155,10 +156,14 @@ const ArticleFormPage = () => {
         variant: "white",
         className:
           "border border-slate-300 text-slate-700 hover:border-slate-400 hover:bg-white",
-        onClick: () => navigate("/articles"),
+      onClick: () => {
+          const page = searchParams.get('page');
+          const redirectUrl = page ? `/articles?page=${page}` : "/articles";
+          navigate(redirectUrl);
+        },
       },
     ],
-    [navigate, isEditMode, articleId]
+    [navigate, isEditMode, articleId, searchParams]
   );
 
   const handleChange = (e) => {
@@ -219,7 +224,9 @@ const ArticleFormPage = () => {
       if (isEditMode) {
         await dispatch(updateArticle({ id: articleId, formData })).unwrap();
         toast.success("Article updated!");
-        navigate(`/articles`);
+      const page = searchParams.get('page');
+        const redirectUrl = page ? `/articles?page=${page}` : "/articles";
+        navigate(redirectUrl);
       } else {
         await dispatch(createArticle(formData)).unwrap();
         toast.success("Article created!");

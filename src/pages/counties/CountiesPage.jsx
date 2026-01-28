@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState,useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AiTwotoneEdit } from "react-icons/ai";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import { LuPlus } from "react-icons/lu";
 import { toast } from "react-toastify";
 import { FaRegEye } from "react-icons/fa";
-import { useNavigate } from "react-router";
+import { useNavigate,useSearchParams  } from "react-router";
 import PageHeader from "../../components/PageHeader";
 import Pagination from "../../UI/pagination";
 import { ROUTES } from "../../consts/routes";
@@ -14,27 +14,61 @@ import { getCounties, deleteCounty } from "../../store/slices/countySlice";
 export const CountyPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+      const [searchParams, setSearchParams] = useSearchParams();
   const { counties, loading, error } = useSelector((state) => state.counties);
+   // Initialize page from URL
+  const getInitialPage = () => {
+    const pageParam = searchParams.get('page');
+    return pageParam ? parseInt(pageParam, 10) || 1 : 1;
+  };
 
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(getInitialPage);
+
   const [limit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [countyToDelete, setCountyToDelete] = useState(null);
   const [search, setSearch] = useState("");
 
-  const fetchCounties = async () => {
+  // Fetch counties with search support
+  const fetchCounties = useCallback(async () => {
     try {
       const res = await dispatch(getCounties({ page, limit, search })).unwrap();
       setTotalPages(res.totalPages || 1);
     } catch (err) {
       console.error(err);
     }
-  };
+   }, [dispatch, page, limit, search]);
+
+  // Update page when URL changes
+  useEffect(() => {
+    const pageParam = searchParams.get('page');
+    const newPage = pageParam ? parseInt(pageParam, 10) || 1 : 1;
+    if (newPage !== page) {
+      setPage(newPage);
+    }
+  }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Update URL when page changes (but not when initializing)
+  useEffect(() => {
+    const pageParam = searchParams.get('page');
+    const currentPageInUrl = pageParam ? parseInt(pageParam, 10) || 1 : 1;
+    if (page !== currentPageInUrl) {
+      if (page > 1) {
+        setSearchParams({ page: page.toString() });
+      } else {
+        setSearchParams({});
+      }
+    }
+  }, [page, searchParams, setSearchParams]);
 
   useEffect(() => {
     fetchCounties();
-  }, [dispatch, page, limit, search]);
+  }, [fetchCounties]);
+
+  useEffect(() => {
+    fetchCounties();
+  }, [fetchCounties]);
 
   const handleDeleteCounty = async () => {
     if (!countyToDelete) return;
@@ -132,14 +166,14 @@ export const CountyPage = () => {
                       <div className="flex items-center justify-center gap-2">
                         <button
                           className="rounded-full border border-slate-200 p-2 text-slate-500 hover:text-slate-900"
-                          onClick={() => navigate(`/county/${county._id}`)}
+                       onClick={() => navigate(`/county/${county._id}?page=${page}`)}
                           title="Preview"
                         >
                           <FaRegEye size={16} />
                         </button>
                         <button
                           className="rounded-full border p-2 text-slate-500 hover:text-slate-900"
-                          onClick={() => navigate(`/county/${county._id}/edit`)}
+                            onClick={() => navigate(`/county/${county._id}/Edit?page=${page}`)}
                         >
                           <AiTwotoneEdit size={16} />
                         </button>

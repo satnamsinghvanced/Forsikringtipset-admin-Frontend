@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams , useSearchParams } from "react-router-dom";
 import PageHeader from "../../components/PageHeader";
 import {
   clearSelectedCounty,
@@ -53,6 +53,7 @@ function labelFor(name) {
 
 const CountiesFormPage = () => {
   const { countyId } = useParams();
+     const [searchParams] = useSearchParams();
   const isEditMode = Boolean(countyId);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -311,7 +312,9 @@ const CountiesFormPage = () => {
         toast.success("County created!");
       }
 
-      navigate("/counties");
+        const page = searchParams.get('page');
+      const redirectUrl = page ? `/counties?page=${page}` : "/counties";
+      navigate(redirectUrl);
     } catch (err) {
       toast.error(err?.data?.message || err.message);
     } finally {
@@ -338,10 +341,14 @@ const CountiesFormPage = () => {
               variant: "white",
               className:
                 "border border-slate-300 text-slate-700 hover:border-slate-400 hover:bg-white",
-              onClick: () => navigate("/counties"),
+ onClick: () => {
+                const page = searchParams.get('page');
+                const redirectUrl = page ? `/counties?page=${page}` : "/counties";
+                navigate(redirectUrl);
+              },
             },
           ],
-          [navigate]
+          [navigate, searchParams]
         )}
       />
 

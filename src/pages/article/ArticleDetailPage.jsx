@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams  } from "react-router-dom";
 import PageHeader from "../../components/PageHeader";
 import {
   clearSelectedArticle,
@@ -12,6 +12,8 @@ const ArticleDetailPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { selectedArticle, loading } = useSelector((state) => state.articles);
+      const [searchParams] = useSearchParams();
+  const page = searchParams.get("page");
 
   useEffect(() => {
     if (articleId) {
@@ -28,14 +30,17 @@ const ArticleDetailPage = () => {
       variant: "white",
       className:
         "border border-slate-300 text-slate-700 hover:border-slate-400 hover:bg-white",
-      onClick: () => navigate(-1),
+      onClick: () => {
+        const redirectUrl = page ? `/articles?page=${page}` : "/articles";
+        navigate(redirectUrl);
+      },
     },
     {
       value: "Edit article",
       variant: "primary",
       className:
         "!bg-primary !text-white !border-primary hover:!bg-secondary hover:!border-secondary",
-      onClick: () => navigate(`/articles/${articleId}/edit`),
+       onClick: () => navigate(`/articles/${articleId}/edit${page ? `?page=${page}` : ""}`),
     },
   ];
 

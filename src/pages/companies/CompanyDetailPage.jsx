@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import PageHeader from "../../components/PageHeader";
 import {
   clearSelectedCompany,
@@ -12,6 +12,8 @@ const CompanyDetailPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { selectedCompany, loading } = useSelector((state) => state.companies);
+     const [searchParams] = useSearchParams();
+  const page = searchParams.get("page");
 
 
   useEffect(() => {
@@ -29,14 +31,17 @@ const CompanyDetailPage = () => {
       variant: "white",
       className:
         "border border-slate-300 text-slate-700 hover:border-slate-400 hover:bg-white",
-      onClick: () => navigate(-1),
+     onClick: () => {
+        const redirectUrl = page ? `/companies?page=${page}` : "/companies";
+        navigate(redirectUrl);
+      },
     },
     {
       value: "Edit Company",
       variant: "primary",
       className:
         "!bg-primary !text-white !border-primary hover:!bg-secondary hover:!border-secondary",
-      onClick: () => navigate(`/company/${companyId}/edit`),
+    onClick: () => navigate(`/company/${companyId}/edit${page ? `?page=${page}` : ""}`),
     },
   ];
 

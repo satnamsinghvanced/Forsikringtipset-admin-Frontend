@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import PageHeader from "../../components/PageHeader";
 import { FaRegCopy } from "react-icons/fa6";
 import { toast } from "react-toastify";
@@ -21,6 +21,8 @@ const LeadDetails = () => {
   const navigate = useNavigate();
 
   const { selectedLead, loading } = useSelector((s) => s.lead);
+     const [searchParams] = useSearchParams();
+  const page = searchParams.get("page");
   const [partnerPrices, setPartnerPrices] = useState([]);
   const [status, setStatus] = useState("");
   const [profit, setProfit] = useState(0);
@@ -202,7 +204,10 @@ const LeadDetails = () => {
       variant: "white",
       className:
         "border border-slate-300 text-slate-700 hover:border-slate-400 hover:bg-white",
-      onClick: () => navigate(-1),
+      onClick: () => {
+        const redirectUrl = page ? `/lead-logs?page=${page}` : "/lead-logs";
+        navigate(redirectUrl);
+      },
     },
     {
       value: "Export CSV",
