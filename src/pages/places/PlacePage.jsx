@@ -1,11 +1,11 @@
-import { useEffect, useState, useRef , useCallback } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AiTwotoneEdit } from "react-icons/ai";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import { LuFileUp, LuPlus } from "react-icons/lu";
 import { FaRegEye } from "react-icons/fa";
 import { toast } from "react-toastify";
-import { useNavigate,useSearchParams  } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import PageHeader from "../../components/PageHeader";
 import Pagination from "../../UI/pagination";
 import { ROUTES } from "../../consts/routes";
@@ -14,11 +14,11 @@ import { getPlaces, importPlaces, deletePlace } from "../../store/slices/placeSl
 export const Places = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-   const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const fileInputRef = useRef(null);
   const { places, loading, error } = useSelector((state) => state.places);
 
-   // Initialize page from URL
+  // Initialize page from URL
   const getInitialPage = () => {
     const pageParam = searchParams.get('page');
     return pageParam ? parseInt(pageParam, 10) || 1 : 1;
@@ -231,7 +231,21 @@ export const Places = () => {
                 places.data.map((place, index) => (
                   <tr key={place._id} className="hover:bg-slate-50">
                     <td className="px-6 py-4 text-slate-500">{(page - 1) * limit + index + 1}</td>
-                    <td className="px-6 py-4 font-medium text-slate-900">{place.name}</td>
+                    <td className="font-medium text-slate-900">
+                      <button
+                        className="hover:text-blue-500 px-6 py-4 text-start"
+                        onClick={(e) => {
+                          if (e.ctrlKey || e.metaKey || e.button === 1) {
+                            window.open(`/place/${place._id}?page=${page}`, "_blank");
+                            return;
+                          } else {
+                            navigate(`/place/${place._id}?page=${page}`)
+                          }
+                        }}
+                      >
+                        {place.name}
+                      </button>
+                    </td>
                     <td className="px-6 py-4">{place.slug}</td>
                     <td className="px-6 py-4">{place.title?.length > 20 ? place.title.slice(0, 20) + "..." : place.title}</td>
                     <td className="px-6 py-4 line-clamp-1 break-words">{place.description}</td>
@@ -244,10 +258,17 @@ export const Places = () => {
                     </td> */}
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-center gap-2">
-                        
+
                         <button
                           className="rounded-full border border-slate-200 p-2 text-slate-500 hover:text-slate-900"
-                          onClick={() => navigate(`/place/${place._id}?page=${page}`)}
+                          onClick={(e) => {
+                            if (e.ctrlKey || e.metaKey || e.button === 1) {
+                              window.open(`/place/${place._id}?page=${page}`, "_blank");
+                              return;
+                            } else {
+                              navigate(`/place/${place._id}?page=${page}`)
+                            }
+                          }}
                           title="Preview"
                         >
                           <FaRegEye size={16} />

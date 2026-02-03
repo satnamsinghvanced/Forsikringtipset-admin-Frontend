@@ -1,11 +1,11 @@
-import { useEffect, useState,useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AiTwotoneEdit } from "react-icons/ai";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import { LuPlus } from "react-icons/lu";
 import { toast } from "react-toastify";
 import { FaRegEye } from "react-icons/fa";
-import { useNavigate,useSearchParams  } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import PageHeader from "../../components/PageHeader";
 import Pagination from "../../UI/pagination";
 import { ROUTES } from "../../consts/routes";
@@ -14,9 +14,9 @@ import { getCounties, deleteCounty } from "../../store/slices/countySlice";
 export const CountyPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-      const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { counties, loading, error } = useSelector((state) => state.counties);
-   // Initialize page from URL
+  // Initialize page from URL
   const getInitialPage = () => {
     const pageParam = searchParams.get('page');
     return pageParam ? parseInt(pageParam, 10) || 1 : 1;
@@ -38,7 +38,7 @@ export const CountyPage = () => {
     } catch (err) {
       console.error(err);
     }
-   }, [dispatch, page, limit, search]);
+  }, [dispatch, page, limit, search]);
 
   // Update page when URL changes
   useEffect(() => {
@@ -159,21 +159,42 @@ export const CountyPage = () => {
                     <td className="px-6 py-4 text-slate-500">
                       {(page - 1) * limit + index + 1}
                     </td>
-                    <td className="px-6 py-4 font-medium text-slate-900">{county.name}</td>
+                    <td className="font-medium text-slate-900">
+                      <button
+                        className="hover:text-blue-500 px-6 py-4 text-start"
+                        onClick={(e) => {
+                          if (e.ctrlKey || e.metaKey || e.button === 1) {
+                            window.open(`/county/${county._id}?page=${page}`, "_blank");
+                            return;
+                          } else {
+                            navigate(`/county/${county._id}?page=${page}`)
+                          }
+                        }}
+                      >
+                        {county.name}
+                      </button>
+                    </td>
                     <td className="px-6 py-4">{county.slug}</td>
                     <td className="px-6 py-4">{county.excerpt}</td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-center gap-2">
                         <button
                           className="rounded-full border border-slate-200 p-2 text-slate-500 hover:text-slate-900"
-                       onClick={() => navigate(`/county/${county._id}?page=${page}`)}
+                          onClick={(e) => {
+                            if (e.ctrlKey || e.metaKey || e.button === 1) {
+                              window.open(`/county/${county._id}?page=${page}`, "_blank");
+                              return;
+                            } else {
+                              navigate(`/county/${county._id}?page=${page}`)
+                            }
+                          }}
                           title="Preview"
                         >
                           <FaRegEye size={16} />
                         </button>
                         <button
                           className="rounded-full border p-2 text-slate-500 hover:text-slate-900"
-                            onClick={() => navigate(`/county/${county._id}/Edit?page=${page}`)}
+                          onClick={() => navigate(`/county/${county._id}/Edit?page=${page}`)}
                         >
                           <AiTwotoneEdit size={16} />
                         </button>

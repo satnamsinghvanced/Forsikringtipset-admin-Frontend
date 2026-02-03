@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback   } from "react"; // 👈 Added useRef
+import { useEffect, useState, useRef, useCallback } from "react"; // 👈 Added useRef
 import { useDispatch, useSelector } from "react-redux";
 import { AiTwotoneEdit } from "react-icons/ai";
 import { RiDeleteBin5Line } from "react-icons/ri";
@@ -21,12 +21,12 @@ import { FaRegEye } from "react-icons/fa";
 export const Company = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-     const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const fileInputRef = useRef(null);
 
   const { companies, loading, error } = useSelector((state) => state.companies);
 
-   // Initialize page from URL
+  // Initialize page from URL
   const getInitialPage = () => {
     const pageParam = searchParams.get('page');
     return pageParam ? parseInt(pageParam, 10) || 1 : 1;
@@ -50,7 +50,7 @@ export const Company = () => {
 
   const [uploadFile, setUploadFile] = useState(null);
 
- // Fetch companies with search support
+  // Fetch companies with search support
   const fetchCompanies = useCallback(async () => {
     try {
       const res = await dispatch(
@@ -299,7 +299,16 @@ export const Company = () => {
                     <td className="px-6 py-4 text-slate-500">
                       {(page - 1) * limit + index + 1}
                     </td>
-                    <td className="px-6 py-4 font-medium text-slate-900">
+                    <td
+                      className="px-6 py-4 font-medium text-slate-900 cursor-pointer hover:text-blue-600 transition-colors"
+                      onClick={(e) => {
+                        if (e.ctrlKey || e.metaKey || e.button === 1) {
+                          window.open(`/company/${company._id}?page=${page}`, "_blank");
+                        } else {
+                          navigate(`/company/${company._id}?page=${page}`);
+                        }
+                      }}
+                    >
                       {company.companyName}
                     </td>
 
@@ -335,7 +344,15 @@ export const Company = () => {
                       <div className="flex items-center justify-center gap-2">
                         <button
                           className="rounded-full border border-slate-200 p-2 text-slate-500 hover:text-slate-900"
-                           onClick={() => navigate(`/company/${company._id}?page=${page}`)}
+                          onClick={(e) => {
+                            if (e.ctrlKey || e.metaKey || e.button === 1) {
+                              window.open(`/company/${company._id}?page=${page}`, "_blank");
+                              return;
+                            } else {
+                              navigate(`/company/${company._id}?page=${page}`)
+                            }
+                          }
+                          }
                           title="Preview"
                         >
                           <FaRegEye size={16} />
@@ -343,7 +360,7 @@ export const Company = () => {
                         <button
                           className="rounded-full border p-2 text-slate-500 hover:text-slate-900"
                           onClick={() =>
-                               navigate(`/company/${company._id}/Edit?page=${page}`)
+                            navigate(`/company/${company._id}/Edit?page=${page}`)
                           }
                         >
                           <AiTwotoneEdit size={16} />
