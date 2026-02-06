@@ -194,7 +194,14 @@ export const CountyPage = () => {
                         </button>
                         <button
                           className="rounded-full border p-2 text-slate-500 hover:text-slate-900"
-                          onClick={() => navigate(`/county/${county._id}/Edit?page=${page}`)}
+                         onClick={(e) => {
+                            if (e.ctrlKey || e.metaKey || e.button === 1) {
+                              window.open(`/county/${county._id}/edit?page=${page}`, "_blank");
+                              return;
+                            } else {
+                              navigate(`/county/${county._id}/edit?page=${page}`)
+                            }
+                          }}
                         >
                           <AiTwotoneEdit size={16} />
                         </button>

@@ -275,7 +275,14 @@ export const Places = () => {
                         </button>
                         <button
                           className="rounded-full border p-2 text-slate-500 hover:text-slate-900"
-                          onClick={() => navigate(`/place/${place._id}/Edit?page=${page}`)}
+                        onClick={(e) => {
+                            if (e.ctrlKey || e.metaKey || e.button === 1) {
+                              window.open(`/place/${place._id}/edit?page=${page}`, "_blank");
+                              return;
+                            } else {
+                              navigate(`/place/${place._id}/edit?page=${page}`)
+                            }
+                          }}
                         >
                           <AiTwotoneEdit size={16} />
                         </button>

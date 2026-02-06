@@ -1,16 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { FaRegEye } from "react-icons/fa6";
+import { useEffect, useRef, useState } from "react";
 import { AiOutlineFundView, AiTwotoneEdit } from "react-icons/ai";
+import { FaRegEye } from "react-icons/fa6";
 import { RiDeleteBin5Line } from "react-icons/ri";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import PageHeader from "../../components/PageHeader";
-import Pagination from "../../UI/pagination";
-import { fetchPartners, deletePartner } from "../../store/slices/partnersSlice";
 import api from "../../api/axios";
-import { LuLogs } from "react-icons/lu";
+import PageHeader from "../../components/PageHeader";
+import { deletePartner, fetchPartners } from "../../store/slices/partnersSlice";
+import Pagination from "../../UI/pagination";
 
 export const CollaboratePartnerPage = () => {
   const navigate = useNavigate();
@@ -19,7 +18,13 @@ export const CollaboratePartnerPage = () => {
     (state) => state.partners
   );
 
-  const [page, setPage] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const getInitialPage = () => {
+    const pageParam = searchParams.get("page");
+    return pageParam ? parseInt(pageParam, 10) || 1 : 1;
+  };
+
+  const [page, setPage] = useState(getInitialPage);
   const limit = 10;
   const [limitLoading, setLimitLoading] = useState(false);
   const [filters, setFilters] = useState({
@@ -57,7 +62,25 @@ export const CollaboratePartnerPage = () => {
       applyFilters(updatedFilters, 1);
     }, 500);
   };
+ useEffect(() => {
+    const pageParam = searchParams.get("page");
+    const newPage = pageParam ? parseInt(pageParam, 10) || 1 : 1;
+    if (newPage !== page) {
+      setPage(newPage);
+    }
+  }, [searchParams]);
 
+  useEffect(() => {
+    const pageParam = searchParams.get("page");
+    const currentPageInUrl = pageParam ? parseInt(pageParam, 10) || 1 : 1;
+    if (page !== currentPageInUrl) {
+      if (page > 1) {
+        setSearchParams({ page: page.toString() });
+      } else {
+        setSearchParams({});
+      }
+    }
+  }, [page, setSearchParams]);
   useEffect(() => {
     applyFilters(filters, page);
   }, [page]);
@@ -94,7 +117,7 @@ export const CollaboratePartnerPage = () => {
       variant: "primary",
       className:
         "!bg-primary !text-white !border-primary hover:!bg-secondary hover:!border-secondary",
-      onClick: () => navigate("/partners/create"),
+     onClick: () => navigate(`/partners/create?page=${page}`),
     },
   ];
 
@@ -328,7 +351,7 @@ export const CollaboratePartnerPage = () => {
                             <button
                               className="rounded-full border border-slate-200 p-2 text-slate-500 hover:text-slate-900"
                               onClick={() =>
-                                navigate(`/partners/view-logs/${p._id}`)
+                                    navigate(`/partners/view-logs/${p._id}?page=${page}`)
                               }
                             >
                               <AiOutlineFundView size={16} />
@@ -344,7 +367,14 @@ export const CollaboratePartnerPage = () => {
                           <div className="relative group">
                             <button
                               className="rounded-full border border-slate-200 p-2 text-slate-500 hover:text-slate-900"
-                              onClick={() => navigate(`/partners/${p._id}`)}
+                               onClick={(e) => {
+                                if (e.ctrlKey || e.metaKey || e.button === 1) {
+                                  window.open(`/partners/${p._id}?page=${page}`, "_blank");
+                                  return;
+                                } else {
+                                  navigate(`/partners/${p._id}?page=${page}`)
+                                }
+                              }}
                             >
                               <FaRegEye size={16} />
                             </button>
@@ -360,9 +390,14 @@ export const CollaboratePartnerPage = () => {
                           <div className="relative group">
                             <button
                               className="rounded-full border p-2 text-slate-500 hover:text-slate-900"
-                              onClick={() =>
-                                navigate(`/partners/${p._id}/edit`)
-                              }
+                           onClick={(e) => {
+                                if (e.ctrlKey || e.metaKey || e.button === 1) {
+                                  window.open(`/partners/${p._id}/edit?page=${page}`, "_blank");
+                                  return;
+                                } else {
+                                  navigate(`/partners/${p._id}/edit?page=${page}`)
+                                }
+                              }}
                             >
                               <AiTwotoneEdit size={16} />
                             </button>
